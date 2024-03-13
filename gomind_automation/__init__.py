@@ -272,9 +272,10 @@ class MouseControl:
 
     """
 
-    mouse_listener = pynput.mouse.Listener(suppress=True)
+    mouse_listener = None
 
     def start_block():
+        MouseControl.mouse_listener = pynput.mouse.Listener(suppress=True)
         MouseControl.mouse_listener.start()
 
     def stop_block():
