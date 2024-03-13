@@ -5,6 +5,9 @@ import pyautogui as py
 from time import sleep, time
 import os
 import pyperclip
+import pynput
+import keyboard
+import string
 
 
 class Logger:
@@ -253,3 +256,74 @@ def special_write(texto: str) -> None:
 def write(texto: str) -> None:
     """So consegue escrever coisas sem caracter especial."""
     py.write(texto)
+
+
+class MouseControl:
+    """
+    Usage:
+        import pyautogui
+        import time
+
+        MouseControl.start_block()
+        for _ in range(5):
+            py.moveTo(randint(200, 500), randint(200, 500), 1)
+            sleep(0.5)
+        MouseControl.stop_block()
+
+    """
+
+    mouse_listener = pynput.mouse.Listener(suppress=True)
+
+    def start_block():
+        MouseControl.mouse_listener.start()
+
+    def stop_block():
+        MouseControl.mouse_listener.stop()
+
+
+KEYS_TO_BLOCK = list(string.ascii_lowercase + string.digits + string.punctuation) + [
+    "tab",
+    "shift",
+    "enter",
+    "ctrl",
+]
+
+
+class KeyboardControl:
+    """
+    Usage:
+        import pyautogui
+        import time
+
+
+        KeyboardControl.start_block()
+
+
+        def on_key_press(key):
+            print(f"Key {key} pressed")
+
+
+        KeyboardControl.add_listener(on_key_press).start()
+
+        for key in KEYS_TO_BLOCK:
+            print("Vai apertar o {}".format(key))
+            pyautogui.press(key)
+            time.sleep(0.5)
+
+        KeyboardControl.stop_block()
+    """
+
+    listeners = []
+
+    def start_block():
+        for key in KEYS_TO_BLOCK:
+            keyboard.block_key(key)
+
+    def stop_block():
+        for key in KEYS_TO_BLOCK:
+            keyboard.unblock_key(key)
+
+    def add_listener(def_to_listen):
+        listener = pynput.keyboard.Listener(on_press=def_to_listen)
+        KeyboardControl.listeners.append(listener)
+        return listener
